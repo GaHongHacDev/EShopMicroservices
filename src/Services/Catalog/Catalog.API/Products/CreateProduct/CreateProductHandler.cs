@@ -5,7 +5,20 @@
 
     internal record CreateProductResult(Guid Id);
 
-    internal class CreateProductCommandHandler(IDocumentSession sesion) : ICommandHandler<CreateProductCommand, CreateProductResult>
+    internal class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+    {
+        public CreateProductCommandValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.Category).NotEmpty().WithMessage("Category is required");
+            RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required");
+            RuleFor(x => x.ImageFile).NotEmpty().WithMessage("Image file is required");
+            RuleFor(x => x.Price).GreaterThan(0).WithMessage("Price must be greater than 0");
+        }
+    }
+
+    internal class CreateProductCommandHandler(IDocumentSession sesion)
+        : ICommandHandler<CreateProductCommand, CreateProductResult>
     {
         public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
         {

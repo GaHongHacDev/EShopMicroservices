@@ -1,3 +1,5 @@
+using BuildingBlocks.Behaviors;
+
 using JasperFx;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,7 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Retrieve the connection string
 var connectionString = builder.Configuration.GetConnectionString("MartenDatabase");
 
-// Add Marten services
+#region Add services to the container. 
+
+#region Add Marten (Session) Dependency Injection
 builder.Services.AddMarten(options =>
 {
     // Establish the connection string
@@ -18,14 +22,29 @@ builder.Services.AddMarten(options =>
     options.AutoCreateSchemaObjects = AutoCreate.All;
 })
 .UseLightweightSessions(); // Recommended for most apps
+#endregion
 
+#region Add Fluent Validate DI 
+builder.Services.AddValidatorsFromAssembly(
+    typeof(Program).Assembly,
+    includeInternalTypes: true
+);
+#endregion
 
-//Add services to the container.
+#region Add Carter DI
 builder.Services.AddCarter();
+#endregion
+
+#region Add MediatR DI
 builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    config.AddOpenBehavior(typeof(ValidationBehavior<,>));
 });
+#endregion
+
+#endregion
+
 var app = builder.Build();
 
 //Configure the HTTP request pipeline.
