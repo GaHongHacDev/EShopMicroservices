@@ -2,6 +2,9 @@ using BuildingBlocks.Behaviors;
 
 using JasperFx;
 
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Retrieve the connection string
@@ -50,5 +53,33 @@ var app = builder.Build();
 //Configure the HTTP request pipeline.
 app.MapCarter();
 
+#region Exception handler lamda
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
+        if (exception == null)
+        {
+            return;
+        }
+
+        var problemDetails = new ProblemDetails
+        {
+            Title = exception.Message,
+            Status = StatusCodes.Status500InternalServerError,
+            Detail = exception.StackTrace,
+        };
+
+        ILogger<Program> logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(exception, exception.Message);
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/problem+json";
+
+        await context.Response.WriteAsJsonAsync(problemDetails);
+    });
+});
+#endregion
 
 app.Run();

@@ -12,7 +12,7 @@ namespace Catalog.API.Products.GetProductById
             var result = await session.LoadAsync<Product>(request.Id, cancellationToken);
             if (result == null)
             {
-                throw new ProductNotFoundException($"Product with id {request.Id} not found");
+                throw new ProductNotFoundException(request.Id);
             }
             return new GetProductByIdResult(result);
         }
