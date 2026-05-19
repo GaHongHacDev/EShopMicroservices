@@ -1,5 +1,7 @@
 using BuildingBlocks.Exceptions.Handler;
 
+using Catalog.API.Data;
+
 using JasperFx;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +44,10 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(ValidationBehavior<,>));
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.InitializeMartenWith<InitialCatalogData>();
+}
 #endregion
 
 #region 
