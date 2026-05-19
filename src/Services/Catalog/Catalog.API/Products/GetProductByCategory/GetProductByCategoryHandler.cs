@@ -1,4 +1,4 @@
-﻿namespace Catalog.API.GetProductByCategory
+﻿namespace Catalog.API.Products.GetProductByCategory
 {
     internal record GetProductByCategoryQuery(string Category) : IQuery<GetProductByCategoryResult>;
     internal record GetProductByCategoryResult(IEnumerable<Product> Products);
@@ -6,7 +6,6 @@
     {
         public async Task<GetProductByCategoryResult> Handle(GetProductByCategoryQuery query, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Log GetProductByCategoryQueryHandler with {@Query}", query);
             var result = await session.Query<Product>()
                                     .Where(p => p.Category.Any(x => x.Contains(query.Category)))
                                     .ToListAsync(cancellationToken);

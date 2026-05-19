@@ -1,5 +1,4 @@
-﻿
-namespace Catalog.API.GetProductByCategory
+﻿namespace Catalog.API.Products.GetProductByCategory
 {
     public class GetProductByCategoryEndpoint : ICarterModule
     {
