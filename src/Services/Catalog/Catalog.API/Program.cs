@@ -2,6 +2,8 @@ using BuildingBlocks.Exceptions.Handler;
 
 using Catalog.API.Data;
 
+using HealthChecks.UI.Client;
+
 using JasperFx;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +52,10 @@ if (builder.Environment.IsDevelopment())
 }
 #endregion
 
+#region Add Health Check DI
+builder.Services.AddHealthChecks().AddNpgSql(connectionString!);
+#endregion
+
 #region 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 #endregion
@@ -63,6 +69,13 @@ app.MapCarter();
 
 #region Exception handler 
 app.UseExceptionHandler(options => { });
+#endregion
+
+#region Health Check Endpoint
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 #endregion
 
 app.Run();
