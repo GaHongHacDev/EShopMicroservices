@@ -9,7 +9,7 @@ using JasperFx;
 var builder = WebApplication.CreateBuilder(args);
 
 // Retrieve the connection string
-var connectionString = builder.Configuration.GetConnectionString("MartenDatabase");
+var connectionString = builder.Configuration.GetConnectionString("CatalogDatabase");
 
 #region Add services to the container. 
 

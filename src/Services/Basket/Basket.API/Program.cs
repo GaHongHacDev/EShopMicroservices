@@ -1,4 +1,6 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using BuildingBlocks.Exceptions.Handler;
+
+var builder = WebApplication.CreateBuilder(args);
 
 //Add services to the container.
 
@@ -45,11 +47,20 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
 #endregion
+
+#region DI Repo
+builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+#endregion
+
+#region DI Exception
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+#endregion
 #endregion
 
 var app = builder.Build();
 
 //Configure the HTTP request pipeline.
 app.MapCarter();
+app.UseExceptionHandler(ops => { });
 
 app.Run();

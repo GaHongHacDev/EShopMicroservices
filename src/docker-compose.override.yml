@@ -1,4 +1,4 @@
-version: '3.4'
+# version: '3.4'
 
 services:
  catalogdb:
@@ -13,12 +13,24 @@ services:
   volumes:
    - postgres_catalog:/var/lib/postgresql/data
 
+ basketdb:
+  container_name: basketdb
+  environment:
+   - POSTGRES_USER=postgres
+   - POSTGRES_PASSWORD=postgres
+   - POSTGRES_DB=BasketDb
+  restart: always
+  ports:
+   - 5433:5432
+  volumes:
+   - postgres_basket:/var/lib/postgresql/data
+
  catalog.api:
    environment:
      - ASPNETCORE_ENVIRONMENT=Development
      - ASPNETCORE_HTTP_PORTS=8080
      - ASPNETCORE_HTTPS_PORTS=8081
-     - ConnectionStrings__MartenDatabase=Server=catalogdb;Port=5432;Database=CatalogDb;Username=postgres;Password=postgres;Include Error Detail=true
+     - ConnectionStrings__CatalogDatabase=Server=catalogdb;Port=5432;Database=CatalogDb;Username=postgres;Password=postgres;Include Error Detail=true
    depends_on:
      - catalogdb
    ports:
@@ -29,3 +41,6 @@ services:
      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+volumes:
+  postgres_catalog:
+  postgres_basket:
